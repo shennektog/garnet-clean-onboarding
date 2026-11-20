@@ -3,6 +3,8 @@ on:
   - push
   - pull_request
 jobs:
+  lint:
+    uses: ./.github/workflows/reusable-lint.yml
   test:
     name: Node.js ${{ matrix.node-version }}
     runs-on: ubuntu-latest
