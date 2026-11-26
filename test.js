@@ -493,3 +493,9 @@ test('limitFunction()', async t => {
 
 	await Promise.all(input);
 });
+
+test('limits concurrent network fetches', async t => {
+	const limit = pLimit(1);
+	const response = await limit(() => fetch('https://example.com'));
+	t.true(response.ok);
+});

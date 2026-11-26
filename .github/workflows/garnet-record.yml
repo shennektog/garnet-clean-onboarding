@@ -1,0 +1,35 @@
+# Garnet Runtime Review: records the dependency install and test run under the
+# Garnet sensor on every pull request and on pushes to the default branch.
+# Pull request runs get one Runtime Review comment per head commit.
+name: Garnet Runtime Visibility
+
+on:
+  push:
+    branches: ['main']
+  pull_request:
+
+permissions: {}
+
+concurrency:
+  group: garnet-record-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  dep-install:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: garnet-org/action@24833a47c19aad605bb10bcd9b8cad8f318ca187 # v2.6.0
+      - name: Install dependencies
+        run: npm install
+      - name: Run tests
+        run: npx ava -m 'limits concurrent network fetches'
+      - name: Let sensor settle
+        if: always()
+        run: sleep 30
