@@ -8,6 +8,10 @@ jobs:
   test:
     name: Node.js ${{ matrix.node-version }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      packages: read
     strategy:
       fail-fast: false
       matrix:
@@ -16,6 +20,9 @@ jobs:
           - 22
           - 20
     steps:
+      - uses: garnet-org/action@24833a47c19aad605bb10bcd9b8cad8f318ca187  # GitHub Release v2.6.0
+        with:
+          job_index: ${{ strategy.job-index }}
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
